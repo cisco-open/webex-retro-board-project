@@ -31,8 +31,11 @@ codebase:
 - **Python 3** — https://www.python.org/downloads/ (used to run the app locally while
   you develop; on macOS you may already have it as `python3`)
 - **A code editor** — [VS Code](https://code.visualstudio.com/) is recommended
-- **A GitHub account** — free; https://github.com/join (used to host your app so
-  Webex can load it, via GitHub Pages)
+- **A GitHub account** — free; https://github.com/join (used to fork and store your
+  project code)
+- **Cloudflare Tunnel (`cloudflared`)** — free; install it using
+  [Cloudflare's instructions](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/)
+  to give your locally running app a temporary public HTTPS address
 - **A Webex Developer Sandbox** — free; see Task 1 (a normal free Webex account
   **cannot** create embedded apps)
 
@@ -41,8 +44,9 @@ codebase:
 # Task 1 — Set up and run "Hello Retro"
 
 The goal of Task 1 is to get the starter app running *inside Webex* and see it greet
-you by name. You'll develop the app **locally** for fast feedback, and publish it to
-**GitHub Pages** so Webex can load it over HTTPS.
+you by name. You'll develop the app **locally** for fast feedback, then use a
+**Cloudflare Quick Tunnel** to give Webex a temporary public HTTPS address for your
+locally running app.
 
 ## 1. Get the code
 Fork this repository on GitHub (top-right **Fork** button) so you have your own copy,
@@ -66,8 +70,8 @@ the console shows one warning that the Webex SDK isn't available — that's expe
 everything except the Webex-only features still works.)
 
 > **Keep this running while you develop.** Almost all of your work — fixing bugs and
-> adding features — is tested here, locally, with instant reloads. You only publish to
-> GitHub Pages (next steps) when you want to test the **Webex-specific** features.
+> adding features — is tested here, locally, with instant reloads. Keep it running
+> when you start the Quick Tunnel and test the app in Webex.
 
 ## 3. Get a Webex Developer Sandbox (per team)
 Embedded apps need a *licensed* Webex organisation. Cisco gives these to developers
@@ -86,20 +90,39 @@ for free as a **Developer Sandbox**.
 4. Everyone signs in to the Webex app using their **sandbox** account for this
    project.
 
-## 4. Publish the app with GitHub Pages
-Webex needs a **public HTTPS** address for your app (it can't load `localhost`).
-GitHub Pages hosts your files for free at a stable URL.
+## 4. Give your local app a public HTTPS address
+Webex needs a **public HTTPS** address for your app; it can't load `localhost` on
+your computer directly. A Cloudflare Quick Tunnel temporarily makes your local app
+available at a public `trycloudflare.com` address. You do not need a Cloudflare
+account or a domain.
 
-1. Push any changes to your fork (`git add -A && git commit -m "..." && git push`).
-2. On GitHub, open your fork → **Settings → Pages**.
-3. Under **Build and deployment → Source**, choose **Deploy from a branch**.
-4. Set the branch to **`main`** and the folder to **`/ (root)`**, then **Save**.
-5. Wait ~1 minute, then refresh. GitHub shows your live URL, e.g.
-   `https://<your-username>.github.io/webex-retro-board-project/`.
-6. Open that URL in your browser to confirm the board loads over HTTPS.
+1. Leave the Python server running from step 2.
+2. Open a **second Terminal window** and run:
+   ```sh
+   cloudflared tunnel --url http://localhost:8000
+   ```
+3. Wait for `cloudflared` to print a URL like
+   `https://some-words.trycloudflare.com`. Open it in a browser and confirm the
+   board loads. Keep this Terminal window open too.
 
-> After any `git push`, GitHub Pages takes ~30–60 seconds to update. This is why you
-> develop locally (step 2) and only push when you want to test inside Webex.
+> The tunnel URL is temporary. It stops working when you stop `cloudflared`, and a
+> new tunnel may have a different URL. Keep both the Python server and tunnel running
+> while you use the app in Webex. Quick Tunnels are intended for testing and
+> development, not as a permanent website.
+
+### Alternative for a static demo: GitHub Pages
+
+If you only need to demonstrate the current app, you can host its static files with
+GitHub Pages instead of running a Quick Tunnel. Push your project to GitHub, then
+open your repository's **Settings → Pages** and deploy the `main` branch from the
+`/ (root)` folder. GitHub will provide a stable HTTPS URL for the app. When you
+follow step 5, use that URL with `/index.html` as the Webex **Start Page URL** and
+its host (for example, `<your-username>.github.io`) as the **Valid domain**, instead
+of the Quick Tunnel URL.
+
+This is convenient for a demo, but updates appear only after you push your changes
+and Pages finishes deploying. Use the Quick Tunnel workflow above when you want to
+test the version running on your computer.
 
 ## 5. Create the Embedded App in the Developer Portal
 1. Go to https://developer.webex.com and sign in **with your sandbox account**.
@@ -107,13 +130,14 @@ GitHub Pages hosts your files for free at a stable URL.
 3. Fill in:
    - **Where does your app work?** — tick **Meeting** and **Messaging**.
    - **Embedded app name** — e.g. "Team Retro Board".
-   - **Start Page URL** — your Pages URL + `index.html`, e.g.
-     `https://<your-username>.github.io/webex-retro-board-project/index.html`.
-   - **Valid domains** — `<your-username>.github.io` (just the host — **not** the
-     full URL, or you'll get an "invalid domain" error).
+   - **Start Page URL** — your current tunnel URL + `/index.html`, e.g.
+     `https://some-words.trycloudflare.com/index.html`.
+   - **Valid domains** — the host from your current tunnel URL, e.g.
+     `some-words.trycloudflare.com` (just the host — **not** `https://` or a path).
 4. Click **Add Embedded App**.
 
-> Your Pages URL is **stable**, so you only set this up once. 🎉
+> If you stop and restart the tunnel, its URL may change. Update the Start Page URL
+> and Valid domains in your embedded app settings to match the new URL.
 
 ## 6. Open it in Webex
 1. In the Webex desktop app (signed in with your sandbox account), start a meeting
@@ -127,11 +151,11 @@ You should see the board — and the header should say **"Hi <your name>"**. �
 <details>
 <summary><b>Nothing loads / errors?</b></summary>
 
-- Open your Pages URL directly in a browser first — does the board load there? If
-  not, check **Settings → Pages** is set to `main` / `/ (root)` and wait a minute.
-- Check the **Start Page URL** ends in `/index.html` and **Valid domains** is
-  `<your-username>.github.io`.
-- Remember a recent `git push` needs ~30–60s before Pages serves the new version.
+- Open the current tunnel URL directly in a browser first — does the board load
+  there? If not, check that the Python server and `cloudflared` are both running.
+- Check the **Start Page URL** ends in `/index.html` and **Valid domains** matches
+  the host in your current tunnel URL.
+- If you restarted `cloudflared`, copy its new URL into the embedded app settings.
 - Make sure you're signed in with the **sandbox** account, not a personal one.
 - Right-click inside the app and choose **Inspect** to open developer tools and read
   the console.
