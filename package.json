@@ -1,0 +1,12 @@
+{
+  "name": "webex-retro-board-project",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A student Webex embedded app with a small local shared-state server",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.22.0"
+  }
+}

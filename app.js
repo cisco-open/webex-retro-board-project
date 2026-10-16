@@ -12,6 +12,9 @@ const COLUMNS = ["start", "stop", "continue"];
 
 // ----- App state: one object holds the whole board -----
 let board = { cards: [] };
+let sharedMode = false;
+let boardSocket = null;
+let reconnectTimer = null;
 
 /* =========================================================
  * 1) WEBEX SDK HELPER
@@ -87,6 +90,15 @@ function addCard(text, column) {
   const clean = (text || "").trim();
   if (clean === "") return null;                 // validation: no empty cards
   if (!COLUMNS.includes(column)) return null;    // validation: real column only
+  if (sharedMode) {
+    const sent = sendSharedAction({
+      type: "add",
+      text: clean,
+      column,
+      author: webexHelper.getUserName(),
+    });
+    return sent ? { pending: true } : null;
+  }
   const card = {
     id: makeId(),
     text: clean,
@@ -101,12 +113,20 @@ function addCard(text, column) {
 
 // Delete a card by its unique id.
 function deleteCard(id) {
+  if (sharedMode) {
+    sendSharedAction({ type: "delete", id });
+    return;
+  }
   board.cards = board.cards.filter((card) => card.id !== id);
   saveState();
 }
 
 // Add one vote to a card by id.
 function voteCard(id) {
+  if (sharedMode) {
+    sendSharedAction({ type: "vote", id });
+    return;
+  }
   const card = board.cards.find((c) => c.id === id);
   if (card) {
     card.votes += 1;
@@ -114,9 +134,10 @@ function voteCard(id) {
   }
 }
 
-// Persist the board so a refresh doesn't lose it.
-// (In the backend stretch goal, these two functions call the API instead.)
+// Persist locally when the static app is used. The Node server stores shared state
+// in its own JSON file and sends updates over a WebSocket instead.
 function saveState() {
+  if (sharedMode) return;
   try {
     localStorage.setItem("retroBoard", JSON.stringify(board));
   } catch (e) {
@@ -124,7 +145,24 @@ function saveState() {
   }
 }
 
-function loadState() {
+async function loadState() {
+  try {
+    const response = await fetch("/api/board", { cache: "no-store" });
+    if (!response.ok) throw new Error("Shared board server is unavailable");
+    const saved = await response.json();
+    if (!saved || !Array.isArray(saved.cards)) {
+      throw new Error("Shared board response is invalid");
+    }
+    board = saved;
+    sharedMode = true;
+    setConnectionStatus("Connecting to shared board…");
+    connectSharedBoard();
+    return;
+  } catch (e) {
+    sharedMode = false;
+    setConnectionStatus("Local only — start the Node server to share this board");
+  }
+
   try {
     const saved = localStorage.getItem("retroBoard");
     if (saved) board = JSON.parse(saved);
@@ -132,6 +170,54 @@ function loadState() {
     console.warn("Could not load board:", e);
     board = { cards: [] };
   }
+}
+
+function setConnectionStatus(message) {
+  const status = document.getElementById("sync-status");
+  if (status) status.textContent = message;
+}
+
+function connectSharedBoard() {
+  if (!sharedMode) return;
+  if (reconnectTimer) clearTimeout(reconnectTimer);
+
+  const scheme = window.location.protocol === "https:" ? "wss:" : "ws:";
+  const socket = new WebSocket(scheme + "//" + window.location.host + "/ws");
+  boardSocket = socket;
+
+  socket.addEventListener("open", () => {
+    setConnectionStatus("Shared board connected");
+  });
+
+  socket.addEventListener("message", (event) => {
+    try {
+      const message = JSON.parse(event.data);
+      if (message.type === "board" && message.board && Array.isArray(message.board.cards)) {
+        board = message.board;
+        renderBoard();
+      }
+    } catch (e) {
+      console.warn("Could not read shared board update:", e);
+    }
+  });
+
+  socket.addEventListener("close", () => {
+    if (boardSocket === socket && sharedMode) {
+      setConnectionStatus("Reconnecting to shared board…");
+      reconnectTimer = setTimeout(connectSharedBoard, 2000);
+    }
+  });
+
+  socket.addEventListener("error", () => socket.close());
+}
+
+function sendSharedAction(action) {
+  if (!boardSocket || boardSocket.readyState !== WebSocket.OPEN) {
+    setConnectionStatus("Shared board is reconnecting — please try again");
+    return false;
+  }
+  boardSocket.send(JSON.stringify(action));
+  return true;
 }
 
 /* =========================================================
@@ -273,7 +359,7 @@ function wireTimer() {
  * BOOTSTRAP
  * ========================================================= */
 async function init() {
-  loadState();
+  await loadState();
   wireEvents();
   renderBoard();
 
