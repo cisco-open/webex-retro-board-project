@@ -28,8 +28,7 @@ codebase:
 ## What you'll need
 
 - **git** — https://git-scm.com/download/
-- **Python 3** — https://www.python.org/downloads/ (used to run the app locally while
-  you develop; on macOS you may already have it as `python3`)
+- **Node.js (LTS)** — https://nodejs.org/ (runs the app and its local backend)
 - **A code editor** — [VS Code](https://code.visualstudio.com/) is recommended
 - **A GitHub account** — free; https://github.com/join (used to fork and store your
   project code)
@@ -59,19 +58,41 @@ ls
 The app files are at the top level of the project: `index.html`, `styles.css`,
 `app.js`.
 
-## 2. Run the app locally (fast dev loop)
-While you're writing code, run the app on your own machine — changes show up the
-instant you reload the browser. In Terminal, from the project folder:
+## 2. Install and run the app locally
+Each student runs the Node server from their own project folder. It serves the
+front end and backend together. In Terminal, run:
 ```sh
-python3 -m http.server 8000
+npm install
+npm start
 ```
-Open `http://localhost:8000` in your browser. You'll see the board. (Outside Webex,
-the console shows one warning that the Webex SDK isn't available — that's expected;
-everything except the Webex-only features still works.)
+Run `npm install` once after cloning the project. Each time you work on it, run
+`npm start`. Open `http://localhost:3000` in your browser. The status should say
+**Shared board connected**. The server saves the board in `data/board.json` on your
+computer, so it is still there after restarting the server.
+Outside Webex, the console may show a warning that the Webex SDK isn't available —
+that's expected; everything except Webex-only features still works.
 
 > **Keep this running while you develop.** Almost all of your work — fixing bugs and
-> adding features — is tested here, locally, with instant reloads. Keep it running
-> when you start the Quick Tunnel and test the app in Webex.
+> adding features — is tested here, locally, with instant reloads.
+
+### Use one shared board with your team
+
+Each student's local server has its own board. To work together on one board, one
+person starts their Node server and Quick Tunnel and shares the tunnel URL with the
+team. Everyone else opens that same URL in their browser or Webex app. The host's
+computer must stay on, with both the Node server and tunnel running. The other
+students can still run their own local servers for development; those servers have
+separate boards.
+
+The app connects to the Node server at `/api/board` and `/ws`. The server sends the
+current board to connected browsers. When someone adds, deletes, or votes on a card,
+the server saves the change to `data/board.json` and sends the updated board to
+everyone connected to that server. The Webex **Share with everyone** button shares
+the app URL; the Node backend keeps the board data in sync.
+
+The trial backend has no login and one board per server. Anyone with the tunnel URL
+can view and change that board, so use demo data only and stop the tunnel when the
+session is over.
 
 ## 3. Get a Webex Developer Sandbox (per team)
 Embedded apps need a *licensed* Webex organisation. Cisco gives these to developers
@@ -96,33 +117,34 @@ your computer directly. A Cloudflare Quick Tunnel temporarily makes your local a
 available at a public `trycloudflare.com` address. You do not need a Cloudflare
 account or a domain.
 
-1. Leave the Python server running from step 2.
+1. Leave the Node server running from step 2.
 2. Open a **second Terminal window** and run:
    ```sh
-   cloudflared tunnel --url http://localhost:8000
+   cloudflared tunnel --url http://localhost:3000
    ```
 3. Wait for `cloudflared` to print a URL like
    `https://some-words.trycloudflare.com`. Open it in a browser and confirm the
    board loads. Keep this Terminal window open too.
 
 > The tunnel URL is temporary. It stops working when you stop `cloudflared`, and a
-> new tunnel may have a different URL. Keep both the Python server and tunnel running
+> new tunnel may have a different URL. Keep both the Node server and tunnel running
 > while you use the app in Webex. Quick Tunnels are intended for testing and
 > development, not as a permanent website.
 
 ### Alternative for a static demo: GitHub Pages
 
-If you only need to demonstrate the current app, you can host its static files with
-GitHub Pages instead of running a Quick Tunnel. Push your project to GitHub, then
-open your repository's **Settings → Pages** and deploy the `main` branch from the
-`/ (root)` folder. GitHub will provide a stable HTTPS URL for the app. When you
-follow step 5, use that URL with `/index.html` as the Webex **Start Page URL** and
+If you only need to demonstrate the app without a Node backend, you can host
+the static files with GitHub Pages instead of running a Quick Tunnel. Push your
+project to GitHub, then open its **Settings → Pages** and deploy the `main` branch
+from the `/ (root)` folder. GitHub will provide a stable HTTPS URL for the app.
+When you follow step 5, use that URL with `/index.html` as the Webex **Start Page URL** and
 its host (for example, `<your-username>.github.io`) as the **Valid domain**, instead
 of the Quick Tunnel URL.
 
-This is convenient for a demo, but updates appear only after you push your changes
-and Pages finishes deploying. Use the Quick Tunnel workflow above when you want to
-test the version running on your computer.
+This is convenient for a static demo, but updates appear only after you push your
+changes and Pages finishes deploying. GitHub Pages serves only the front end, so
+the board is saved separately in each browser. Use the Node server and Quick Tunnel
+for the normal setup and shared boards.
 
 ## 5. Create the Embedded App in the Developer Portal
 1. Go to https://developer.webex.com and sign in **with your sandbox account**.
@@ -152,7 +174,7 @@ You should see the board — and the header should say **"Hi <your name>"**. �
 <summary><b>Nothing loads / errors?</b></summary>
 
 - Open the current tunnel URL directly in a browser first — does the board load
-  there? If not, check that the Python server and `cloudflared` are both running.
+  there? If not, check that the Node server and `cloudflared` are both running.
 - Check the **Start Page URL** ends in `/index.html` and **Valid domains** matches
   the host in your current tunnel URL.
 - If you restarted `cloudflared`, copy its new URL into the embedded app settings.
@@ -184,8 +206,8 @@ into **four clearly commented areas**:
 1. **Webex SDK helper (`webexHelper`)** — everything that talks to Webex (who the
    user is, the theme, sharing).
 2. **State** — the `board` object and the functions that change it: `addCard`,
-   `deleteCard`, `voteCard`, and `saveState`/`loadState` (which use the browser's
-   `localStorage`).
+   `deleteCard`, `voteCard`, and `saveState`/`loadState` (which use the Node backend
+   by default, or `localStorage` as a fallback if the backend is unavailable).
 3. **Render** — functions that turn the `board` into what you see: `renderBoard`,
    `renderColumn`, `createCardElement`, `updateCounts`.
 4. **Events** — wiring buttons and the form to state changes, then re-rendering.
@@ -257,9 +279,9 @@ You've now set up, read, fixed, and extended a real app. Time to make it yours.
 ## Extend it
 Pick one or two ideas (or invent your own):
 
-- _TODO: idea 1_
-- _TODO: idea 2_
-- _TODO: idea 3_
+- Add an edit button so cards can be changed after they are posted.
+- Add filters so the team can show cards by column or vote count.
+- Add support for multiple boards, each with its own ID in the URL.
 
 ## Present your work
 Wrap up by showing the team what you built:
