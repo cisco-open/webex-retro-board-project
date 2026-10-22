@@ -414,22 +414,27 @@ diving in.
 
 ---
 
-# Task 4 — Make it your own + present
+# Task 4 — Create an embedded app of your own
 
-You've now set up, read, fixed, and extended a real app. Time to make it yours.
+Now it's time to take everything you've learnt from the previous few tasks and
+create an embedded app of your own.
 
-## Extend it
-Pick one or two ideas (or invent your own):
+Here are a few ideas to get you started:
 
-- Add an edit button so cards can be changed after they are posted.
-- Add filters so the team can show cards by column or vote count.
-- Add support for multiple boards, each with its own ID in the URL.
+- A planning poker app for estimating tickets as a team.
+- A standup board where each person posts what they did yesterday, what
+  they're doing today, and any blockers.
+- A team icebreaker/quiz app to run at the start of a meeting.
+
+These are just a few ideas — for more inspiration, check out the Embedded Apps
+page on the Webex App Hub: https://apphub.webex.com/embedded-apps
 
 ## Present your work
-Wrap up by showing the team what you built:
+Wrap up by showing the team what you built across the whole project:
 
-- Demo your app running **inside Webex**.
-- Explain one bug you fixed and how you found it.
-- Show the feature you added and why you made your choices.
+- Demo your new embedded app running **inside Webex**.
+- From the retro board: explain one issue you fixed and how you found it.
+- From the retro board: show the feature you added and why you made your
+  choices.
 
 > _TODO: add any presentation format / time limit / rubric for the workshop._
