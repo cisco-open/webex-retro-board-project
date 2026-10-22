@@ -236,20 +236,41 @@ next task.
 
 ---
 
-# Task 3 — Fix bugs & add a feature
+# Task 3 — Make improvements to the Retro Board app
 
-This is the main event. First you'll hunt down and fix some **planted bugs**, then
-you'll **add a feature** of your own.
+For this section, the aim will be to extend the functionality of the retro board
+app. You will be adding new features of your own and addressing some issues with
+the current implementation.
 
-## Part A — Find and fix the bugs
+## Part A — Discover some issues
 
-> _TODO: list the planted bugs here. For each: a short symptom to reproduce, and a
-> `<details>` hint dropdown — students fix them, so don't include the solution._
+Before adding anything new, try out the board together and see if you can spot
+any issues with how it currently behaves.
 
-- [ ] Bug 1 — _symptom / how to reproduce_
-- [ ] Bug 2 — _symptom / how to reproduce_
-- [ ] Bug 3 — _symptom / how to reproduce_
-- [ ] Bug 4 — _symptom / how to reproduce_
+Discuss in your group what would happen if:
++ You click vote on the same card several times.
++ You start the 5-minute timer, then refresh the page.
++ Two people each start their own timer on their own screens.
++ You delete a card that someone else on the team added.
+
+* **Exercise:** Try these out to determine what the current behaviour is and
+  have a think about what the desired behaviour should be.
+
+The most obvious one: right now, anyone can vote on the same card as many
+times as they like, which defeats the point of voting in a retro. Can you
+think of a good way to prevent this?
+
+- **Exercise:** Change `voteCard` so each person can only vote once per card.
+
+  <details>
+  <summary><b>Hint</b></summary>
+
+  You'll need some way of remembering *who* has already voted on a card, not
+  just *how many* votes it has got. Look at how `card.votes` is currently
+  stored in the **State** area, and think about what shape of data could
+  replace a single number.
+
+  </details>
 
 ## Part B — Add a feature: upvoting
 
