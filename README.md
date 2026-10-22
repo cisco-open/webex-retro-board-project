@@ -198,10 +198,12 @@ You should see the board — and the header should say **"Hi <your name>"**. �
 
 ---
 
-# Task 2 — Explore the Retro Board code
+# Task 2 — Explore the Retro Board app
 
-Before changing code, a good engineer reads it. Open `app.js`. It's organised
-into **four clearly commented areas**:
+The goal of this task is to become more familiar with how the code is structured
+and to explore some of the features of the Retro Board app.
+
+Open `app.js`. It's organised into **four clearly commented areas**:
 
 1. **Webex SDK helper (`webexHelper`)** — everything that talks to Webex (who the
    user is, the theme, sharing).
@@ -212,7 +214,25 @@ into **four clearly commented areas**:
    `renderColumn`, `createCardElement`, `updateCounts`.
 4. **Events** — wiring buttons and the form to state changes, then re-rendering.
 
-> _More of Task 2 (guided reading exercises) to follow._
+## Explore the features together
+
+Now that everyone has their own copy running, pick one person's tunnel URL from
+Task 1 and have everyone on the team open that same board — inside Webex
+(**Open for all** / **Add to tab**) or by pasting the tunnel URL into a browser
+tab.
+
+### Features to try
+
+Try these as a team and watch what happens on the other screens:
+
+- **Add a card** to each of the three columns (**Start**, **Stop**, **Continue**).
+- **Vote** on a teammate's card.
+- **Delete** a card.
+
+Once everyone can see each other's changes show up, your shared board is working
+— your Node server keeps one shared board, and everyone who opens the same
+tunnel URL is looking at the same board, live. You're ready to move on to the
+next task.
 
 ---
 
