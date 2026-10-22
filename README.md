@@ -354,6 +354,29 @@ properly secure in a production app?
 
 </details>
 
+### Bonus — Make the timer shared state
+
+Remember from Part A that the timer isn't shared — everyone's countdown is
+independent, and refreshing the page resets it. Build on that observation by
+turning it into a real shared feature.
+
+- **Exercise:** Move the timer into the shared `board` state, so that when one
+  person starts it, everyone sees the same countdown, and refreshing the page
+  doesn't lose any progress.
+
+  <details>
+  <summary><b>Hint</b></summary>
+
+  Think about what needs to be stored instead of a simple `remaining` counter
+  — a running countdown can't just be a number, since every client would need
+  to agree on *when* it started. Consider storing an end time (a timestamp)
+  in `board` instead, and have each client calculate `remaining` locally from
+  that. You'll also need a new action type (alongside `add`/`delete`/`vote`)
+  so starting/stopping the timer gets sent to the server and broadcast to
+  everyone, the same way card actions already are.
+
+  </details>
+
 ## Challenge — Post the summary to the space
 
 The summary above only shows up inside the app. As a stretch goal, try posting
