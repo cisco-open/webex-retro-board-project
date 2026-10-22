@@ -272,42 +272,120 @@ think of a good way to prevent this?
 
   </details>
 
-## Part B — Add a feature: upvoting
+## Part B — Add some new features
 
-Retros work best when the team can see which points matter most. Your feature: let
-people **upvote** a card, so the most-agreed items stand out.
+Now that voting only counts once per person, let's build on top of it.
 
-**Goal:** each card has an upvote button and a running vote count. Clicking it adds
-a vote and the count updates immediately.
+### 1. Reorder cards by votes
+
+Make each column sort its cards so the most-voted items appear at the top. When
+someone votes, the card should move up if it overtakes another.
+
+- **Exercise:** Sort each column's cards by vote count (highest first).
+
+  <details>
+  <summary><b>Hint</b></summary>
+
+  Sorting happens at **render** time — look at `renderColumn()` in the
+  **Render** area. The state itself doesn't need to change, only the order
+  you draw the cards in.
+
+  </details>
+
+### 2. Only let people delete their own cards
+
+Right now, anyone can delete any card on the board, including cards someone
+else added.
+
+- **Exercise:** Change `deleteCard` (and the delete button in
+  `createCardElement`) so a card can only be deleted by the person who added
+  it.
+
+  <details>
+  <summary><b>Hint</b></summary>
+
+  You already have `card.author` and `webexHelper.getUserName()` available.
+  Compare the two before allowing the delete to go ahead — and consider
+  hiding the delete button entirely on cards that aren't yours.
+
+  </details>
+
+### 3. Let the facilitator complete the retro
+
+Retro boards are usually reset between sprints. Add a **Complete retro** button
+that shows a short summary of the top-voted card(s) in each column, then clears
+every card at once — but only the meeting host or co-host should be able to use
+it.
+
+**Goal:** a new button that displays a summary and then removes all cards from
+the board (for everyone, if you're in shared mode), visible only to the
+host/co-host.
 
 Steps to think about:
-1. Where is a card drawn? (Look in the **Render** area — `createCardElement`.)
-   Add an upvote button and somewhere to show the count.
-2. Where does clicking happen? (Look in the **Events** area.) Wire the button so a
-   click calls the right state function.
-3. Where does the count actually change? (Look in the **State** area — there's a
-   `voteCard` function.) Make sure the number goes up and the board re-renders.
+1. How do you find out if the current user is the host or co-host? Look up the
+   `meeting:roleChanged` event in the Webex Embedded Apps SDK docs.
+2. Where would you find the top card(s) per column? (Look in the **State**
+   area, next to `renderColumn` if you've already done the vote-sorting
+   exercise above.)
+3. Where would a new "clear" action fit alongside `add`/`delete`/`vote` in the
+   **State** area (and in `server.js`'s `applyAction`, if you're in shared
+   mode)?
+4. Where should the button be hidden/shown based on role? (Look at the
+   **Events**/**Render** areas.)
 
 <details>
-<summary><b>Hint — where to start</b></summary>
+<summary><b>Hint — roles</b></summary>
 
-The three areas of `app.js` map to the three steps above: **Render** (show the
-button + count), **Events** (react to the click), **State** (change the count).
-Follow an existing action like *delete* to see how a button flows through all three.
+`app.listen()` lets you subscribe to `"meeting:roleChanged"`, which gives you
+an array of the current user's roles (for example `["HOST"]` or
+`["PARTICIPANT"]`). Store whether the current user is a host/co-host somewhere
+`wireEvents` can read it, and use that to show/hide the Complete retro button.
 
 </details>
 
-### Bonus — reorder cards by votes
+<details>
+<summary><b>Hint — a note on security</b></summary>
 
-Once upvoting works, make each column **sort its cards so the most-upvoted appear at
-the top**. When someone votes, the card should move up if it overtakes another.
+This app has no real authentication, so the role check only happens in the
+browser — it's there to stop accidental clicks, not a determined user editing
+their own client. That's a known limitation of this trial backend (see the
+note in Task 1). Worth discussing with your group: how would you make this
+properly secure in a production app?
+
+</details>
+
+## Challenge — Post the summary to the space
+
+The summary above only shows up inside the app. As a stretch goal, try posting
+it as an actual message in the Webex space, so it's visible in the chat
+history even after the board is cleared.
+
+This is a different thing entirely from the Embedded Apps SDK you've used so
+far — it needs the separate
+[Webex Messages API](https://developer.webex.com/docs/api/v1/messages), which
+requires its own OAuth access token.
+
+* **Exercise:** When the facilitator clicks **Complete retro**, also post a
+  message into the space with the same summary.
+
+This needs a few extra pieces most of this project hasn't touched yet:
+
+- An OAuth token with permission to send messages (`spark:messages_write`),
+  obtained via `app.initiateSystemBrowserOAuth()`.
+- The space's id, available from `app.context.getSpace()`.
+- A call to `POST https://webexapis.com/v1/messages` (see the
+  [Messages API reference](https://developer.webex.com/docs/api/v1/messages))
+  with that token, the space id as `roomId`, and your summary as `markdown`.
 
 <details>
 <summary><b>Hint</b></summary>
 
-Sorting happens at **render** time. Before drawing a column's cards, sort that
-column's list by vote count (highest first). Array `.sort()` with a comparator is
-all you need — the state doesn't have to change, only the order you draw them in.
+You'll need to register a separate OAuth Integration (not just your Embedded
+App) in the Developer Portal to get a client id/secret with the
+`spark:messages_write` scope, then handle the token exchange — likely from
+`server.js`, since the authorization code shouldn't be exchanged for a token
+in the browser. This is a good one to pair up on or research as a group before
+diving in.
 
 </details>
 
