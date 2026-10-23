@@ -1,5 +1,9 @@
 # Webex Retro Board Project
 
+[![Contributor-Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-fbab2c.svg)](CODE_OF_CONDUCT.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Maintainer](https://img.shields.io/badge/Maintainer-Cisco-00bceb.svg)](https://opensource.cisco.com)
+
 Welcome! Over this project you'll build and improve a **Webex Embedded App** — a
 *team retro board* that runs right inside Webex. Along the way you'll do the things
 a software engineer does every day: set up a project, read existing code, **fix
@@ -438,3 +442,25 @@ Wrap up by showing the team what you built across the whole project:
   choices.
 
 > _TODO: add any presentation format / time limit / rubric for the workshop._
+
+---
+
+## Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for
+guidelines.
+
+## Code of Conduct
+
+This project follows the [Contributor Covenant Code of
+Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold
+this code.
+
+## Security
+
+To report a security issue, please see [SECURITY.md](SECURITY.md) rather than
+filing a public GitHub issue.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
