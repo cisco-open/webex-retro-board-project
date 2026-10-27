@@ -207,6 +207,45 @@ You should see the board — and the header should say **"Hi <your name>"**. �
 The goal of this task is to become more familiar with how the code is structured
 and to explore some of the features of the Retro Board app.
 
+## How it all fits together
+
+Before reading the code, here's the big picture of how the pieces talk to each
+other:
+
+```mermaid
+flowchart LR
+    subgraph Webex["Webex Client (desktop / mobile / browser)"]
+        SDK["Embedded Apps SDK\n(user, theme, roles, share)"]
+        App["Your embedded app\nindex.html + styles.css + app.js\n(webexHelper · State · Render · Events)"]
+        SDK <-->|"postMessage\n(in-process)"| App
+    end
+
+    subgraph Backend["Your machine"]
+        Tunnel["Cloudflare Tunnel\n(public HTTPS URL)"]
+        Server["server.js\n(Node + ws)"]
+        Data[("data/board.json")]
+    end
+
+    App -->|"GET /, /app.js, /styles.css"| Tunnel
+    App <-->|"GET /api/board\nWebSocket /ws"| Tunnel
+    Tunnel <--> Server
+    Server <--> Data
+    Server -.->|"broadcasts board\nupdates to every client"| App
+```
+
+- **The Webex client** loads your page inside a meeting or space and injects
+  the **Embedded Apps SDK** directly into it — this is how `app.js` reads
+  your name, theme, and meeting role.
+- **Outside Webex**, you can open the same page in a plain browser tab for
+  testing (see Task 1) — everything still works except the Webex-specific
+  bits, since `window.webex` won't exist there.
+- **Cloudflare Tunnel** gives your locally running Node server a public
+  HTTPS address, since Webex can't load `localhost` directly (see Task 1).
+- **`server.js`** serves the static files, keeps one shared `board` in
+  memory and in `data/board.json`, and broadcasts every change to all
+  connected clients over a WebSocket — this is what makes the board "shared"
+  rather than just local to your own browser.
+
 Open `app.js`. It's organised into **four clearly commented areas**:
 
 1. **Webex SDK helper (`webexHelper`)** — everything that talks to Webex (who the
