@@ -218,6 +218,74 @@ Open `app.js`. It's organised into **four clearly commented areas**:
    `renderColumn`, `createCardElement`, `updateCounts`.
 4. **Events** — wiring buttons and the form to state changes, then re-rendering.
 
+## Debugging tips
+
+When something behaves unexpectedly, follow one user action through the code:
+the **Events** area handles the click or form submit, a state function changes
+`board`, and the **Render** area updates the page. For example, adding a card
+flows from the form handler in `wireEvents()` to `addCard()`, then to
+`renderBoard()`.
+
+### Debug with VS Code
+
+The project includes VS Code launch options in `.vscode/launch.json`. Open the
+project folder in VS Code, select a configuration from **Run and Debug**, and
+press **F5**:
+
+- **Debug Node backend** starts `server.js` under the debugger. Set breakpoints
+  in `server.js`, then use the app in a browser. Node requests and WebSocket
+  messages will pause at those breakpoints, where you can inspect **Variables**
+  and **Call Stack** and step through the code. Stop any server already running
+  on port 3000 before launching this configuration.
+- **Debug Retro Board in Chrome** opens `http://localhost:3000` in Chrome for
+  front-end debugging. Start the server separately with `npm start`, set
+  breakpoints in `app.js`, and use the browser's **Sources** panel or VS Code's
+  browser debugger to step through the front end.
+
+When execution pauses, inspect **Variables** and **Call Stack** to see the
+current values and how the code got there. Step over a line to follow the flow
+without entering every helper; step into a function when you want to inspect it.
+
+### Use browser developer tools
+
+Open developer tools with **F12** or **Ctrl+Shift+I** on Windows/Linux, or
+**Cmd+Option+I** on Mac. In Webex, right-click inside the embedded app and
+choose **Inspect** if that option is available; otherwise reproduce the issue
+at `http://localhost:3000` in a browser, where the same front-end code runs.
+
+- **Console:** look for red errors and warnings. Click a filename and line
+  number in a message to jump to the source. The warning that the Webex SDK is
+  unavailable in a normal browser is expected; Webex-only features need to be
+  tried inside Webex.
+- **Sources:** set breakpoints in `app.js`, then perform the action in the page.
+  You can inspect local variables and step through the code just as in VS Code.
+- **Network:** reload the page and check that `GET /api/board` succeeds. Select
+  the **WS** filter and open the `/ws` connection to inspect messages when cards
+  are added or votes change. A failed request or a closed WebSocket often means
+  the local server is stopped or the page is pointed at a different server.
+- **Elements:** inspect the board markup and styles when a card exists but is
+  missing, misplaced, or styled unexpectedly.
+- **Application/Storage:** inspect `localStorage` if the app is using its
+  browser-storage fallback. With the normal Node server, the shared board is
+  stored in `data/board.json` instead.
+
+### Add temporary console logs
+
+Use `console.log()` to print a small, useful value at each stage of the flow.
+For example, temporarily add a log in the form handler, in `addCard()`, and
+before `renderBoard()` runs:
+
+```js
+console.log("Form submitted", { text: textEl.value, column: columnEl.value });
+console.log("Adding card", { text: clean, column });
+console.log("Rendering board", board.cards.length, "cards");
+```
+
+Read the output in the browser Console. If the first message appears but the
+next one does not, the issue is between those steps. For backend activity,
+`server.js` logs appear in the terminal running `npm start`. Remove temporary
+logs when you finish debugging so the console stays useful.
+
 ## Explore the features together
 
 Now that everyone has their own copy running, pick one person's tunnel URL from
