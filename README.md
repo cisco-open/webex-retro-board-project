@@ -370,12 +370,12 @@ Before adding anything new, try out the board together and see if you can spot
 any issues with how it currently behaves.
 
 Discuss in your group what would happen if:
-+ You click vote on the same card several times.
-+ You start the 5-minute timer, then refresh the page.
-+ Two people each start their own timer on their own screens.
-+ You delete a card that someone else on the team added.
+- You click vote on the same card several times.
+- You start the 5-minute timer, then refresh the page.
+- Two people each start their own timer on their own screens.
+- You delete a card that someone else on the team added.
 
-* **Exercise:** Try these out to determine what the current behaviour is and
+- **Exercise:** Try these out to determine what the current behaviour is and
   have a think about what the desired behaviour should be.
 
 The most obvious one: right now, anyone can vote on the same card as many
@@ -434,34 +434,24 @@ else added.
 
 ### 3. Let the facilitator complete the retro
 
-Retro boards are usually reset between sprints. Add a **Complete retro** button
-that shows a short summary of the top-voted card(s) in each column, then clears
-every card at once — but only the meeting host or co-host should be able to use
-it.
+Retro boards are usually reset between sprints.
 
-**Goal:** a new button that displays a summary and then removes all cards from
-the board (for everyone, if you're in shared mode), visible only to the
-host/co-host.
+**Goal:** Add a **Complete retro** button, visible only to the meeting
+host or co-host, that clears all the cards from the board (for everyone, if
+you're in shared mode).
 
 Steps to think about:
-1. How do you find out if the current user is the host or co-host? Look up the
-   `meeting:roleChanged` event in the Webex Embedded Apps SDK docs.
-2. Where would you find the top card(s) per column? (Look in the **State**
-   area, next to `renderColumn` if you've already done the vote-sorting
-   exercise above.)
-3. Where would a new "clear" action fit alongside `add`/`delete`/`vote` in the
-   **State** area (and in `server.js`'s `applyAction`, if you're in shared
-   mode)?
-4. Where should the button be hidden/shown based on role? (Look at the
-   **Events**/**Render** areas.)
+1. How do you find out if the current user is the host or co-host?
+2. Where would a new "clear" action fit in, alongside the existing ones —
+   don't forget to think about shared mode too.
+3. Where should the button be hidden/shown based on role?
 
 <details>
 <summary><b>Hint — roles</b></summary>
 
-`app.listen()` lets you subscribe to `"meeting:roleChanged"`, which gives you
-an array of the current user's roles (for example `["HOST"]` or
-`["PARTICIPANT"]`). Store whether the current user is a host/co-host somewhere
-`wireEvents` can read it, and use that to show/hide the Complete retro button.
+`app.listen()` lets you subscribe to `"meeting:roleChanged"`, which gives
+you an array of the current user's roles (for example `["HOST"]` or
+`["PARTICIPANT"]`).
 
 </details>
 
@@ -499,18 +489,26 @@ turning it into a real shared feature.
 
   </details>
 
-## Challenge — Post the summary to the space
+## Challenge — Do something with the retro points
 
-The summary above only shows up inside the app. As a stretch goal, try posting
-it as an actual message in the Webex space, so it's visible in the chat
-history even after the board is cleared.
+Right now, **Complete retro** just clears the board — once the cards are
+gone, so is everything the team discussed. As a challenge, work out a way to
+present the results of the retro before clearing it, and persist that
+somewhere so the team can look back on it later.
 
-This is a different thing entirely from the Embedded Apps SDK you've used so
-far — it needs the separate
+Some options, from easiest to most involved:
+- Save it into `data/board.json` as a `history` array of past retros.
+- Generate a downloadable file (e.g. a PDF).
+- Post it as an actual message in the Webex space, so it's visible in the
+  chat history even after the board is cleared.
+
+The last option is the most interesting one to try, but also the most
+involved — it's a different thing entirely from the Embedded Apps SDK you've
+used so far, needing the separate
 [Webex Messages API](https://developer.webex.com/docs/api/v1/messages), which
 requires its own OAuth access token.
 
-* **Exercise:** When the facilitator clicks **Complete retro**, also post a
+- **Exercise:** When the facilitator clicks **Complete retro**, also post a
   message into the space with the same summary.
 
 This needs a few extra pieces most of this project hasn't touched yet:
@@ -529,8 +527,7 @@ You'll need to register a separate OAuth Integration (not just your Embedded
 App) in the Developer Portal to get a client id/secret with the
 `spark:messages_write` scope, then handle the token exchange — likely from
 `server.js`, since the authorization code shouldn't be exchanged for a token
-in the browser. This is a good one to pair up on or research as a group before
-diving in.
+in the browser.
 
 </details>
 
@@ -538,7 +535,7 @@ diving in.
 
 # Task 4 — Create an embedded app of your own
 
-Now it's time to take everything you've learnt from the previous few tasks and
+Now it's time to take everything you've learnt from the previous tasks and
 create an embedded app of your own.
 
 Here are a few ideas to get you started:
@@ -548,8 +545,8 @@ Here are a few ideas to get you started:
   they're doing today, and any blockers.
 - A team icebreaker/quiz app to run at the start of a meeting.
 
-These are just a few ideas — for more inspiration, check out the Embedded Apps
-page on the Webex App Hub: https://apphub.webex.com/embedded-apps
+For more inspiration, check out the Embedded Apps page on the Webex App Hub:
+https://apphub.webex.com/embedded-apps
 
 ## Present your work
 
