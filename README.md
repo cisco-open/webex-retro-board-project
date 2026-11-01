@@ -541,14 +541,20 @@ These are just a few ideas — for more inspiration, check out the Embedded Apps
 page on the Webex App Hub: https://apphub.webex.com/embedded-apps
 
 ## Present your work
-Wrap up by showing the team what you built across the whole project:
 
-- Demo your new embedded app running **inside Webex**.
-- From the retro board: explain one issue you fixed and how you found it.
-- From the retro board: show the feature you added and why you made your
-  choices.
+Each team will get **7-10 minutes** to share what they have built across the
+whole project, followed by a couple of minutes for questions. The main focus
+of the presentation is to showcase your **new embedded app** from Task 4.
 
-> _TODO: add any presentation format / time limit / rubric for the workshop._
+- Share **one or two things you learned** while working on the retro board —
+  for example, a bug you fixed and how you tracked it down, a feature you
+  added and the design choices behind it, something that stood out to
+  your team, or your favourite bit of the project.
+- Explain the idea behind your new embedded app, then demo it running
+  **inside Webex**.
+
+> **Tip:** Record a short backup video of your demo beforehand, in case the
+> live demo doesn't go as planned.
 
 ---
 
