@@ -64,7 +64,7 @@ locally running app.
 
 ## 1. Get the code
 Fork this repository on GitHub (top-right **Fork** button) so you have your own copy,
-then clone it to your Mac:
+then clone it:
 ```sh
 git clone https://github.com/<your-username>/webex-retro-board-project.git
 cd webex-retro-board-project
