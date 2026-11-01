@@ -4,30 +4,41 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Maintainer](https://img.shields.io/badge/Maintainer-Cisco-00bceb.svg)](https://opensource.cisco.com)
 
-Welcome! Over this project you'll build and improve a **Webex Embedded App** — a
-*team retro board* that runs right inside Webex. Along the way you'll do the things
-a software engineer does every day: set up a project, read existing code, **fix
-bugs**, and **add features**.
+Welcome! In this project you'll build and improve a **Webex Embedded App** — a
+*team retro board* that runs right inside Webex. As a software engineer, you
+rarely only deal with code you've written yourself. A lot of the job is
+actually getting to grips with code someone else wrote. Being able to quickly
+get up to speed on an unfamiliar project and start contributing is an
+invaluable skill to have, and this project is designed to give you an idea of
+what that's like. You'll practise making sense of an existing codebase and
+building on top of it, **fixing existing bugs** and tackling **feature
+requests**.
 
-A "retro" (retrospective) is a meeting where a team reflects on how things are going
-using three columns: **Start / Went well**, **Stop**, and **Continue**. Your app
-lets a team fill those columns with cards, vote on them, and share the board with
-everyone in a Webex meeting or space.
+This app is designed to help teams run a retro without leaving Webex — it
+gives them a shared board inside the meeting or space. A "retro"
+(retrospective) is a regular meeting in Agile/Scrum teams where a team
+reflects on how things are going. There are many formats; this app uses a
+common one with three columns: **Start / Went well**, **Stop**, and
+**Continue**. Teams fill those columns with cards, vote on them, and discuss
+the points on the board.
 
-> **What's an Embedded App?** Unlike a chatbot that runs on a server, an embedded
-> app is a small web page (HTML/CSS/JavaScript) that Webex loads *inside* the client.
-> You'll write real front-end code and use the **Webex Embedded Apps SDK** to read
-> who the user is, match the light/dark theme, and share your board.
+> **What's an Embedded App?** An embedded app is a web application
+> (HTML/CSS/JavaScript) that Webex loads directly inside the client, in a
+> meeting or a space. To help your app talk to Webex, Webex provides the
+> **Embedded Apps SDK** ([docs](https://developer.webex.com/docs/embedded-apps)),
+> which you'll use to find out who's using the app, react to meeting events
+> (such as who's the host), and share your app with everyone in the meeting
+> or space.
 
 ## The project at a glance
 
-You'll work through four tasks — the same arc a real engineer follows on a new
-codebase:
+You'll work through four tasks, finishing with a final task where you'll
+create an embedded app of your own!
 
 1. **Task 1 — Set up & run "Hello Retro"** — get the starter app running inside Webex.
 2. **Task 2 — Explore the code** — read and understand what's already there.
-3. **Task 3 — Fix bugs & add features** — the main event.
-4. **Task 4 — Make it your own** — extend it, and present your work.
+3. **Task 3 — Fix bugs & add features** — build on the existing app.
+4. **Task 4 — Make it your own** — the main event: build a new embedded app, and present your work.
 
 ## What you'll need
 
