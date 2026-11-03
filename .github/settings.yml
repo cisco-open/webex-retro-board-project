@@ -1,0 +1,22 @@
+---
+# These settings are synced to GitHub by https://github.com/repository-settings/app
+
+branches:
+  - name: main
+    # https://developer.github.com/v3/repos/branches/#update-branch-protection
+    # Branch Protection settings. Set to null to disable
+    protection:
+      # Require at least one approving review on a pull request, before merging.
+      required_pull_request_reviews:
+        # The number of approvals required.
+        required_approving_review_count: 1
+        # Dismiss approved reviews automatically when a new commit is pushed.
+        dismiss_stale_reviews: true
+        # Blocks merge until code owners (see CODEOWNERS) have reviewed.
+        require_code_owner_reviews: true
+      # Enforce all configured restrictions for administrators too.
+      enforce_admins: true
+      # Prevent force pushes to this branch.
+      allow_force_pushes: false
+      # Prevent this branch from being deleted.
+      allow_deletions: false

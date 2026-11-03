@@ -1,4 +1,4 @@
 # Maintainers
 
-- [lualkhal_cisco](https://github.com/lualkhal_cisco)
-- [tomrobin_cisco](https://github.com/tomrobin_cisco)
+- [Lactuca3](https://github.com/Lactuca3)
+- [tomtvr](https://github.com/tomtvr)
